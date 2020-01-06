@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Golbal variable */
+extern char *buff;
+
 /* Structures */
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)

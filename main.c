@@ -1,5 +1,30 @@
 #include "monty.h"
 /**
+ * op_scan - Detects which instruction to use according to the opcode
+ * @op_tkn: Token which may represent a Monty opcode
+ * Return: Pointer to a function if a valid instruction was found
+ * or NULL if nothing was found.
+ */
+void (*op_scan(char *op_tkn))(stack_t **stack, unsigned int line_number)
+{
+	instruction_t instrucs[] = {
+		{"push", push},
+		{"pall", pall},
+		{NULL, NULL}
+	};
+	int i;
+	while (instrucs[i].opcode != NULL)
+	{
+		if (strcmp(instrucs[i].opcode, op_tkn) == 0)
+		{
+			return (instrucs[i].f);
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+/**
  * main - Entry Point. Reads the file and sends it to the parser
  * @argc: Amount of arguments recieved
  * @argv: Argument vector/array
@@ -9,9 +34,11 @@ int main(int argc, char **argv)
 {
 	FILE *monty_f;
 	stack_t *stack = NULL;
-	char *buff = NULL;
+	char *delims = " \n";
 	size_t buff_size = 0;
 	int line;
+	char *buff = NULL;
+	void (*op_func)(stack_t **stack, unsigned int line_number);
 
 	if (argc != 2)
 	{
@@ -26,26 +53,17 @@ int main(int argc, char **argv)
 	}
 	for (line = 1; getline(&buff, &buff_size, monty_f) != -1; line++)
 	{
-		
+		op_func = op_scan(strtok(buff, delims));
+		if (op_func == NULL)
+		{
+			fprintf(stderr, "L%d: unknown instruction %s\n", line, buff);
+			free(buff);
+			fclose(monty_f);
+			exit(EXIT_FAILURE);
+		}
+		op_func(&stack, line);
 	}
-
-	return (0);
-}
-
-/**
- * parser - Parses the line into an opcode and executes it
- * @line: Line's content
- * @stack: The stack itself
- * @line_number: Monty file's current line
- * Return: Nothing
- */
-void parser(char *line, char **stack, unsigned int line_number)
-{
-	instruction_t execute[] = {
-		{"push", push},
-		{"pall", pall},
-		{NULL, NULL}
-	};
-
-	
+	free(buff);
+	fclose(monty_f);
+	return (EXIT_SUCCESS);
 }

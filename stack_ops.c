@@ -16,16 +16,9 @@ void push(stack_t **stack, unsigned int line_number)
 	if (strint == NULL)
 	{
 		fprintf(stderr, "Error: malloc failed\n");
-		free_list();
 		exit(EXIT_FAILURE);
 	}
 	strint = strtok(NULL, " ");
-	if (!(valid_int(strint)))
-	{
-		fprintf(stderr, "L%ud: usage: push integer\n", line_number);
-		free_list();
-		exit(EXIT_FAILURE);
-	}
 	new->n = atoi(strint);
 	new->prev = NULL;
 	new->next = *stack;
