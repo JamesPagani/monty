@@ -53,15 +53,18 @@ int main(int argc, char **argv)
 	}
 	for (line = 1; getline(&buff, &buff_size, monty_f) != -1; line++)
 	{
-		op_func = op_scan(strtok(buff, delims));
-		if (op_func == NULL)
+		if (strtok(buff, delims) != NULL)
 		{
-			fprintf(stderr, "L%d: unknown instruction %s\n", line, buff);
-			free(buff);
-			fclose(monty_f);
-			exit(EXIT_FAILURE);
+			op_func = op_scan(strtok(buff, delims));
+			if (op_func == NULL)
+			{
+				fprintf(stderr, "L%d: unknown instruction %s\n", line, buff);
+				free(buff);
+				fclose(monty_f);
+				exit(EXIT_FAILURE);
+			}
+			op_func(&stack, line);
 		}
-		op_func(&stack, line);
 	}
 	free(buff);
 	fclose(monty_f);
